@@ -24,19 +24,20 @@ public class Database {
 
         }
     }
-    public void InsertRecord( int temp_C, int humidity, int windspeedKmph, int uvIndex, String weatherDesc, String city){
-        String sql = "INSERT INTO Records(temp_C, humidity, windspeedKmph, uvIndex, weatherDesc, timestamp) VALUES (?,?,?,?,?,?,?)";
+    public void InsertRecord(Record record){
+        String sql = "INSERT INTO Records(temp_C, humidity, windspeedKmph, uvIndex, weatherDesc, city, timestamp) VALUES (?,?,?,?,?,?,?)";
         LocalDateTime date = LocalDateTime.now();
         try {
+            record.setTimestamp(date.toString());
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, temp_C);
-            pstmt.setInt(2, humidity);
-            pstmt.setInt(3, windspeedKmph);
-            pstmt.setInt(4, uvIndex);
-            pstmt.setString(5, weatherDesc);
-            pstmt.setString(6,city);
-            pstmt.setString(7, date.toString());
+            pstmt.setInt(1, record.getTemp_C());
+            pstmt.setInt(2, record.getHumidity());
+            pstmt.setInt(3, record.getWindspeedKmph());
+            pstmt.setInt(4, record.getUvIndex());
+            pstmt.setString(5, record.getWeatherDesc());
+            pstmt.setString(6, record.getCity());
+            pstmt.setString(7, record.getTimestamp());
             pstmt.executeUpdate();
             pstmt.close();
             conn.close();
@@ -48,20 +49,28 @@ public class Database {
         }
     }
 
-
-
-    public ArrayList<String> getProducts(){
+    public ArrayList<Record> getRecords(String city){
+        ArrayList <Record> records = new ArrayList<>();
         Connection conn = connect();
-        String sql = "SELECT * FROM Blockchain ORDER BY asc ASC";
-        Statement stmt = null;
-        ResultSet rs;
+        String sql = "SELECT * FROM Records WHERE city = ?";
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs;
+            pstmt.setString(1, city);
+            rs = pstmt.executeQuery();
             while (rs.next()){
-                rs.getInt("asc");
+                Record record = new Record();
+                rs.getInt("id");
+                record.setTemp_C(rs.getInt("temp_C"));
+                record.setHumidity(rs.getInt("humidity"));
+                record.setWindspeedKmph(rs.getInt("windspeedKmph"));
+                record.setUvIndex(rs.getInt("uvIndex"));
+                record.setWeatherDesc(rs.getString("weatherDesc"));
+                record.setCity(rs.getString("city"));
+                record.setTimestamp(rs.getString("timestamp"));
+                records.add(record);
             }
-            return null;
+            return records;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -22,7 +22,7 @@ public class APIConnection {
         }
         return instance;
     }
-    public void getWeatherData(String city){
+    public Record getWeatherData(String city){
 
         try
         {
@@ -31,20 +31,18 @@ public class APIConnection {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject weatherdata = new JSONObject(response.body());
             String tempC = weatherdata.getJSONArray("current_condition").getJSONObject(0).get("temp_C").toString();
-            System.out.println(tempC);
             String humidity = weatherdata.getJSONArray("current_condition").getJSONObject(0).get("humidity").toString();
-            System.out.println(humidity);
             String windspeedKmph = weatherdata.getJSONArray("current_condition").getJSONObject(0).get("windspeedKmph").toString();
-            System.out.println(windspeedKmph);
             String uvIndex = weatherdata.getJSONArray("current_condition").getJSONObject(0).get("uvIndex").toString();
-            System.out.println(uvIndex);
-            String weatherDesc = weatherdata.getJSONArray("current_condition").getJSONObject(0).get("weatherDesc").toString();
-            System.out.println(weatherDesc);
+            String weatherDesc = weatherdata.getJSONArray("current_condition").getJSONObject(0).getJSONArray("weatherDesc").getJSONObject(0).get("value").toString();
+            Record record = new Record(Integer.valueOf(tempC), Integer.valueOf(humidity), Integer.valueOf(windspeedKmph), Integer.valueOf(uvIndex), weatherDesc, city);
+            return record;
 
         }
         catch (Exception e){
 
             e.printStackTrace();
+            return null;
 
         }
     }
