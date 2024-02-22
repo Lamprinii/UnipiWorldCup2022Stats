@@ -9,19 +9,40 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.json.JSONObject;
 
+/**
+ * This class is used to connect with the API
+ */
 public class APIConnection {
+    /**
+     * It is a singleton class so we used the instance variables
+     */
     private static APIConnection instance;
+
+    /**
+     * The empty constructor
+     */
     private APIConnection(){
 
 
 
     }
+
+    /**
+     * The singleton class creation
+     * @return the new class
+     */
     public static APIConnection getInstance(){
         if (instance == null){
             instance = new APIConnection();
         }
         return instance;
     }
+
+    /**
+     * This method is used to return the current record of the given city
+     * @param city the given city
+     * @return the current record
+     */
     public Record getWeatherData(String city){
 
         try
