@@ -4,10 +4,32 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * The class that utilized the connection with the database
+ */
 public class Database {
     private Connection conn;
 
+    /**
+     * It is a singleton class so we used the instance variables
+     */
+    private static Database instance;
 
+    /**
+     * The singleton class creation
+     * @return the new class
+     */
+    public static Database getInstance(){
+        if (instance == null){
+            instance = new Database();
+        }
+        return instance;
+    }
+
+    /**
+     * This method is used to insert a new city in the database
+     * @param name the name of the city
+     */
     public void InsertCity(String name){
         String sql = "INSERT INTO Cities(name) VALUES (?)";
         try {
@@ -24,6 +46,11 @@ public class Database {
 
         }
     }
+
+    /**
+     * The method is used to insert a new record in the database
+     * @param record the new record
+     */
     public void InsertRecord(Record record){
         String sql = "INSERT INTO Records(temp_C, humidity, windspeedKmph, uvIndex, weatherDesc, city, timestamp) VALUES (?,?,?,?,?,?,?)";
         LocalDateTime date = LocalDateTime.now();
@@ -49,16 +76,22 @@ public class Database {
         }
     }
 
+    /**
+     * This method is used to get all the records of the given city
+     * @param city the given city
+     * @return the arraylist with all the records
+     */
     public ArrayList<Record> getRecords(String city){
         ArrayList <Record> records = new ArrayList<>();
         Connection conn = connect();
-        String sql = "SELECT * FROM Records WHERE city = ?";
+        String sql = "SELECT * FROM Records WHERE city = ?"; // The SQL query
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql); // we created a new preparedStatement
             ResultSet rs;
-            pstmt.setString(1, city);
+            pstmt.setString(1, city); // We added the name of the city in the SQL query
             rs = pstmt.executeQuery();
             while (rs.next()){
+                // The data is transformed in a record class
                 Record record = new Record();
                 rs.getInt("id");
                 record.setTemp_C(rs.getInt("temp_C"));
@@ -70,18 +103,48 @@ public class Database {
                 record.setTimestamp(rs.getString("timestamp"));
                 records.add(record);
             }
+            pstmt.close();
+            conn.close();
             return records;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * This method to check if the given city exists in the database
+     * @param city the given city
+     * @return true if the city exists else otherwise
+     */
+    public Boolean getCity(String city){
+        Connection conn = connect();
+        String sql = "SELECT Name FROM Cities WHERE Name = ?"; // The SQL query
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql); // we created a new preparedStatement
+            ResultSet rs;
+            pstmt.setString(1, city); // We added the name of the city in the SQL query
+
+            rs = pstmt.executeQuery();
+            conn.close();
+            pstmt.close();
+            if (rs.next()){
+                return true; // if the results set has any data it returns true
+            }
+            return false; // otherwise false
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
 
+    /**
+     * This method performs the connection with the database
+     * @return the connection
+     */
     private static Connection connect(){
-        String connectionString = "jdbc:sqlite:Weatherapp.db";
+        String connectionString = "jdbc:sqlite:Weatherapp.db"; // We specify the SQL type and the database file
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection(connectionString);
+            connection = DriverManager.getConnection(connectionString); // we perform the connection
         } catch (SQLException ex) {
             System.out.print(" Connection could not be initiated");
             ex.printStackTrace();
