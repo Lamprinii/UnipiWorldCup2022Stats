@@ -10,6 +10,7 @@ import java.awt.geom.Line2D;
  */
 public class Plot extends JPanel {
 
+
     int[] temps;
 
     /**
@@ -53,7 +54,6 @@ public class Plot extends JPanel {
         int j=0;//This variable is used to determine the coordintes
         // set points to the graph
         for (int i = temps.length-1; i >= 0; i--) {
-            System.out.println(temps[i]);
             double x1 = marg + j * x;
             double y1 = height - marg - scale * temps[i];
             graph.fill(new Ellipse2D.Double(x1 - 2, y1 - 2, 4, 4));

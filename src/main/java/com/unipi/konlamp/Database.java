@@ -68,6 +68,9 @@ public class Database {
             pstmt.executeUpdate();
             pstmt.close();
             conn.close();
+            System.out.println("The record has been successfully added in the database");
+            System.out.println("Record data:");
+            System.out.println(record.toString());
         }
         catch (SQLException e) {
             System.out.print(" The given record could not be inserted");

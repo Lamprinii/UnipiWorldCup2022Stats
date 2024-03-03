@@ -1,5 +1,9 @@
 package com.unipi.konlamp;
 
+/*
+    Konstantinos Perrakis mpsp2333
+    Lamprini Zerva mpsp2312
+ */
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -21,7 +25,7 @@ public class Main {
             System.out.println("Main Menu: ");
             System.out.println("Press 1: To get a new Temperature");
             System.out.println("Press 2: To get history of records");
-            System.out.println("Press 3: To get the statistics");
+            System.out.println("Press 3: To get the temperature graph");
             System.out.println("Press 0: To exit the program");
 
             Scanner scanner = new Scanner(System.in);
@@ -58,6 +62,7 @@ public class Main {
                     Scanner scannerCity = new Scanner(System.in);
                     String city = scannerCity.next();
                     city = city.toUpperCase(); // We convert the input to uppercase to avoid errors
+                    System.out.println("You gave the following city:" + city);
                     while (!db.getCity(city)) { // Check if the given city exists in the database
                         System.out.println("The given city does not exist in the database");
                         System.out.println("Give another insert or press E+Enter to return to the main menu");
@@ -66,6 +71,8 @@ public class Main {
                         if (city.toLowerCase().equals("e")){
                             break;
                         }
+                        city = city.toUpperCase();
+
                     }
                     if (city.toLowerCase().equals("e")){
                         continue;
@@ -82,11 +89,19 @@ public class Main {
                     Scanner scannerCity = new Scanner(System.in);
                     String city = scannerCity.next();
                     city = city.toUpperCase();
-                    System.out.println(city);
-                    while (!db.getCity(city)) {// Check if the given city exists in the database
+                    System.out.println("You gave the following city:" + city);
+                    while (!db.getCity(city)) { // Check if the given city exists in the database
                         System.out.println("The given city does not exist in the database");
                         System.out.println("Give another insert or press E+Enter to return to the main menu");
+
                         city = scannerCity.next();
+                        if (city.toLowerCase().equals("e")){
+                            break;
+                        }
+                        city = city.toUpperCase();
+                    }
+                    if (city.toLowerCase().equals("e")){
+                        continue;
                     }
                     ArrayList<Record> records = db.getRecords(city);
                     int[] temps = new int[records.size()]; // we extract the temperatures from the records of the given city
